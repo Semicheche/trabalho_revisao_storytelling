@@ -1,0 +1,113 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"
+    integrity="sha512-SIMGYRUjwY8+gKg7nn9EItdD8LCADSDfJNutF9TPrvEo86sQmFMh6MyralfIyhADlajSxqc7G0gs7+MwWF/ogQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <title>Document</title>
+</head>
+
+<body>
+  <h2>Analise Evolução Temporal</h2>
+  <!-- <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+    <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off">
+    <label class="btn btn-outline-primary" for="btncheck1">Checkbox 1</label>
+  
+    <input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off">
+    <label class="btn btn-outline-primary" for="btncheck2">Checkbox 2</label>
+  
+    <input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off">
+    <label class="btn btn-outline-primary" for="btncheck3">Checkbox 3</label>
+  </div> -->
+    <div class="row">
+      <div class="col-md-6">
+        <canvas id="myChart"></canvas>
+      </div>
+      <div class="col-md-6">
+        <canvas id="myChart1"></canvas>
+      </div>
+  </div>
+</body>
+<script type=text/javascript>
+  const ctx = document.getElementById('myChart');
+  const qtde = JSON.parse('{{ qtde | tojson | safe}}');
+  var ano = JSON.parse('{{ ano | tojson | safe}}');
+  const ocorencia = JSON.parse('{{ ocorencia | tojson | safe}}');
+ 
+  let estelionato = []
+  let roubo =  []
+  ocorencia.forEach(function (element, i) {
+     if (element == 'estelionato'){
+        estelionato.push(qtde[i])
+     }
+     if (element == 'roubo_rua'){
+        roubo.push(qtde[i])
+     }
+  });
+
+  var _ano = new Set(ano)
+
+
+  ano = Array.from(_ano)
+  console.log(ano)
+  console.log(estelionato)
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ano,
+      datasets: [
+        {
+          label: ocorencia[0],
+          data: estelionato,
+          borderWidth: 1
+        },
+        {
+          label: ocorencia[1],
+          data: roubo,
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+  const ctx1 = document.getElementById('myChart1');
+// const labels = Utils.months({count: 7});
+const data = {
+  labels: ano,
+  datasets: [
+        {
+          label: ocorencia[0],
+          data: estelionato,
+          fill: false,
+          borderWidth: 3,
+          borderColor: 'rgb(247, 236, 89)',
+          tension: 0.1
+        },
+        {
+          label: ocorencia[1],
+          data: roubo,
+          fill: false,
+          borderWidth:3,
+          borderColor: 'rgb(146, 220, 229)',
+          tension: 0.1
+        }
+    ]
+};
+
+new Chart(ctx1, {
+    type: 'line',
+    data: data
+})
+</script>
+</html>
