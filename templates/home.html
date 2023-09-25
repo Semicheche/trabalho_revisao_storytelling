@@ -12,7 +12,7 @@
 </head>
 
 <body>
-  <h2>Analise Evolução Temporal</h2>
+  
   <!-- <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
     <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off">
     <label class="btn btn-outline-primary" for="btncheck1">Checkbox 1</label>
@@ -23,21 +23,38 @@
     <input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off">
     <label class="btn btn-outline-primary" for="btncheck3">Checkbox 3</label>
   </div> -->
-    <div class="row">
+  
+    <div class="row  mx-2">
+      <h1>Analise Evolução Temporal Estelionato x Roubo de Rua  </h1>
       <div class="col-md-6">
+        <h3>Estelionato x Roubo de Rua Por ano</h3>
         <canvas id="myChart"></canvas>
       </div>
       <div class="col-md-6">
+        <h3>Estelionato x Roubo de Rua Por ano</h3>
         <canvas id="myChart1"></canvas>
       </div>
   </div>
+  <br />
+
+  <div class="row mx-2">
+    <h1>Analise  Estelionato x Ameaça e ranking por BPM  </h1>
+    <div class="col-md-6">
+      <h3>Ameaça x Estelionato Por BPM</h3>
+      <canvas id="myChart2"></canvas>
+    </div>
+    <div class="col-md-6">
+      <h3>Ranking das Delegacias com mais ocorrencia de Estelionato</h3>
+      <canvas id="myChart3"></canvas>
+    </div>
 </body>
 <script type=text/javascript>
   const ctx = document.getElementById('myChart');
   const qtde = JSON.parse('{{ qtde | tojson | safe}}');
   var ano = JSON.parse('{{ ano | tojson | safe}}');
   const ocorencia = JSON.parse('{{ ocorencia | tojson | safe}}');
- 
+  const resultado = JSON.parse('{{ resultado | tojson | safe}}');
+
   let estelionato = []
   let roubo =  []
   ocorencia.forEach(function (element, i) {
@@ -108,6 +125,73 @@ const data = {
 new Chart(ctx1, {
     type: 'line',
     data: data
-})
+});
+data_bpm = []
+
+data_rank_oc = []
+data_rank_dp = []
+
+resultado.forEach(function (element, i) {
+      data_bpm.push({
+        x: element['ameaca'],
+        y: element['estelionato'],
+        r: 10
+      })
+  });
+
+const ctx2 = document.getElementById('myChart2');
+// const labels = Utils.months({count: 7});
+const data2 = {
+  datasets: [{
+    label: 'Ameaca x Estelionato Por BPM',
+    data:data_bpm,
+    backgroundColor: 'rgb(255, 99, 132)'
+  }],
+};
+
+new Chart(ctx2, {
+    type: 'scatter',
+    data: data2,
+    options: {
+    scales: {
+      x: {
+        type: 'linear',
+        position: 'bottom'
+      }
+    }
+  }
+});
+var resultado1 = resultado.sort((a, b) => b['estelionato'] - a['estelionato'])
+resultado1.forEach(function (element, i) {
+    if (i <= 10){
+      data_rank_dp.push(element['batalhao'] + 'º BPM')
+      data_rank_oc.push(element['estelionato'])
+    }
+  });
+
+const ctx3 = document.getElementById('myChart3');
+
+new Chart(ctx3, {
+    type: 'bar',
+    data: {
+      labels: data_rank_dp,
+      datasets: [
+      {
+          label: 'Estelionato',
+          data: data_rank_oc,
+          borderWidth: 1
+        },
+      ]
+    },
+    options: {
+      indexAxis: 'y',
+      scales: {
+        y: {
+          beginAtZero: true,
+        }
+      }
+    }
+  });
+
 </script>
 </html>
